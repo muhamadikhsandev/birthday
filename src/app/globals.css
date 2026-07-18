@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+@theme {
+  /* Earth-tone Color Palette */
+  --color-coksu-light: #FBF5EC;
+  --color-coksu-mid: #F0E0C8;
+  --color-coksu-dark: #D2B48C;
+  --color-coksu-brown: #A0785A;
+  --color-romantic-rose: #C96868;
+  --color-romantic-rose-dark: #A84F4F;
+  --color-romantic-rose-light: #F0A0A0;
+  --color-charcoal: #2C2C2C;
+  --color-ivory: #FFFDF7;
+
+  /* Fonts */
+  --font-script: var(--font-sacramento);
+  --font-sans: var(--font-quicksand);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-quicksand), 'Quicksand', sans-serif;
+  background-color: #FBF5EC;
+  color: #2C2C2C;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #D2B48C;
+  border-radius: 999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #C96868;
+}
+
+/* Floating petals animation */
+@keyframes float-down {
+  0% {
+    transform: translateY(-60px) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+@keyframes sway {
+  0%, 100% { transform: translateX(0px); }
+  50% { transform: translateX(30px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(201, 104, 104, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(201, 104, 104, 0.6), 0 0 60px rgba(201, 104, 104, 0.3); }
+}
+
+@keyframes envelope-open {
+  0% { transform: rotateX(0deg); }
+  100% { transform: rotateX(-180deg); }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes float-up {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float-up {
+  animation: float-up 3s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
