@@ -10,9 +10,8 @@ interface SakuraPetalProps {
   size: number;
   caught: boolean;
   onCatch: (id: number) => void;
+  onMiss: (id: number) => void;
 }
-
-const PETAL_EMOJIS = ["🌸", "🌷", "🌺", "🌼", "🪷"];
 
 export default function SakuraPetal({
   id,
@@ -22,9 +21,8 @@ export default function SakuraPetal({
   size,
   caught,
   onCatch,
+  onMiss,
 }: SakuraPetalProps) {
-  const emoji = PETAL_EMOJIS[id % PETAL_EMOJIS.length];
-
   if (caught) return null;
 
   return (
@@ -45,10 +43,15 @@ export default function SakuraPetal({
         x: { duration: duration * 0.5, repeat: Infinity, ease: "easeInOut" },
       }}
       onClick={() => onCatch(id)}
+      onAnimationComplete={() => {
+        if (!caught) {
+          onMiss(id);
+        }
+      }}
       whileHover={{ scale: 1.3 }}
       whileTap={{ scale: 0.8 }}
     >
-      {emoji}
+      🌸
     </motion.div>
   );
 }

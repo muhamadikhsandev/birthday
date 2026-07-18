@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AnimatePresence } from "framer-motion";
 import EnvelopeSlide from "@/components/envelope/EnvelopeSlide";
 import CatchSakuraGame from "@/components/game/CatchSakuraGame";
@@ -55,6 +55,8 @@ function PageIndicator({ current }: { current: PageSection }) {
 
 export default function BirthdayApp() {
   const [page, setPage] = useState<PageSection>(1);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   // Prevent scroll bounce
   useEffect(() => {
@@ -63,6 +65,39 @@ export default function BirthdayApp() {
       document.body.style.overflow = "";
     };
   }, []);
+
+  // Initialize background music
+  useEffect(() => {
+    const audio = new Audio("/A_Lifetime_in_Your_Smile.ogg");
+    audio.loop = true;
+    audio.volume = 0.45; // Pleasant, clear, non-overpowering volume level
+    audio.preload = "auto";
+    audioRef.current = audio;
+
+    return () => {
+      audio.pause();
+    };
+  }, []);
+
+  const playBGM = () => {
+    if (audioRef.current && !isPlaying) {
+      audioRef.current.play()
+        .then(() => setIsPlaying(true))
+        .catch((err) => console.log("Autoplay prevented, waiting for user interaction:", err));
+    }
+  };
+
+  const toggleBGM = () => {
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play()
+        .then(() => setIsPlaying(true))
+        .catch((err) => console.log("Failed to play audio:", err));
+    }
+  };
 
   return (
     <main
@@ -75,11 +110,26 @@ export default function BirthdayApp() {
       {/* Background floating petals */}
       <BackgroundPetals />
 
+      {/* Floating BGM Toggle Button */}
+      <button
+        onClick={toggleBGM}
+        className="fixed top-6 right-6 z-30 w-12 h-12 rounded-full flex items-center justify-center bg-white/60 backdrop-blur-md border border-white/80 shadow-lg text-xl hover:scale-105 active:scale-95 transition-all cursor-pointer"
+        title={isPlaying ? "Mute BGM" : "Play BGM"}
+      >
+        {isPlaying ? "🎵" : "🔇"}
+      </button>
+
       {/* Slide content */}
       <div className="relative z-10 w-full h-full flex items-center justify-center px-4">
         <AnimatePresence mode="wait">
           {page === 1 && (
-            <EnvelopeSlide key="slide-1" onOpen={() => setPage(2)} />
+            <EnvelopeSlide
+              key="slide-1"
+              onOpen={() => {
+                playBGM();
+                setPage(2);
+              }}
+            />
           )}
           {page === 2 && (
             <CatchSakuraGame key="slide-2" onComplete={() => setPage(3)} />

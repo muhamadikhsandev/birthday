@@ -41,10 +41,8 @@ export default function CatchSakuraGame({ onComplete }: CatchSakuraGameProps) {
   const handleCatch = useCallback(
     (id: number) => {
       if (showSuccess) return;
-      setPetals((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, caught: true } : p))
-      );
-      // Add catch effect
+
+      // Find the caught petal to get its position for the catch effect
       const petal = petals.find((p) => p.id === id);
       if (petal) {
         setCatchEffects((prev) => [
@@ -55,6 +53,7 @@ export default function CatchSakuraGame({ onComplete }: CatchSakuraGameProps) {
           setCatchEffects((prev) => prev.filter((e) => e.id !== Date.now()));
         }, 800);
       }
+
       setScore((prev) => {
         const next = prev + 1;
         if (next >= TOTAL_SAKURA) {
@@ -63,19 +62,46 @@ export default function CatchSakuraGame({ onComplete }: CatchSakuraGameProps) {
         }
         return next;
       });
+
+      // Respawn the caught petal as a new one
+      setPetals((prev) =>
+        prev.map((p) =>
+          p.id === id
+            ? {
+                id: Math.random(),
+                x: 10 + Math.random() * 80,
+                delay: 0.1 + Math.random() * 0.4,
+                duration: 4 + Math.random() * 3,
+                size: 28 + Math.random() * 16,
+                caught: false,
+              }
+            : p
+        )
+      );
     },
     [petals, showSuccess, onComplete]
   );
 
-  // Reset petals after all fall (loop)
-  useEffect(() => {
-    if (score >= TOTAL_SAKURA) return;
-    const allFallen = petals.every((p) => p.caught);
-    if (allFallen && score < TOTAL_SAKURA) {
-      // shouldn't happen since we catch them, but safety reset
-      setTimeout(() => setPetals(generatePetals()), 500);
-    }
-  }, [petals, score]);
+  const handleMiss = useCallback(
+    (id: number) => {
+      if (showSuccess) return;
+      setPetals((prev) =>
+        prev.map((p) =>
+          p.id === id
+            ? {
+                id: Math.random(),
+                x: 10 + Math.random() * 80,
+                delay: 0.1 + Math.random() * 0.4,
+                duration: 4 + Math.random() * 3,
+                size: 28 + Math.random() * 16,
+                caught: false,
+              }
+            : p
+        )
+      );
+    },
+    [showSuccess]
+  );
 
   return (
     <motion.div
@@ -139,7 +165,12 @@ export default function CatchSakuraGame({ onComplete }: CatchSakuraGameProps) {
 
         {/* Falling petals */}
         {petals.map((petal) => (
-          <SakuraPetal key={petal.id} {...petal} onCatch={handleCatch} />
+          <SakuraPetal
+            key={petal.id}
+            {...petal}
+            onCatch={handleCatch}
+            onMiss={handleMiss}
+          />
         ))}
 
         {/* Catch effects */}
