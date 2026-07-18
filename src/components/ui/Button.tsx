@@ -1,4 +1,5 @@
 import React from "react";
+import { useAudio } from "@/context/AudioContext";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
@@ -11,8 +12,10 @@ export default function Button({
   variant = "primary",
   size = "md",
   className = "",
+  onClick,
   ...props
 }: ButtonProps) {
+  const { playSFX } = useAudio();
   const base =
     "inline-flex items-center justify-center gap-2 rounded-full font-sans font-semibold transition-all duration-200 cursor-pointer select-none";
 
@@ -29,12 +32,21 @@ export default function Button({
     lg: "px-10 py-4 text-lg",
   };
 
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    playSFX();
+    if (onClick) {
+      onClick(e);
+    }
+  };
+
   return (
     <button
       className={`${base} ${variants[variant]} ${sizes[size]} ${className}`}
+      onClick={handleClick}
       {...props}
     >
       {children}
     </button>
   );
 }
+

@@ -106,3 +106,30 @@ body {
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
 }
+
+/* Audio spectrum wave animation */
+@keyframes music-bar-1 {
+  0%, 100% { height: 3px; }
+  50% { height: 12px; }
+}
+@keyframes music-bar-2 {
+  0%, 100% { height: 6px; }
+  50% { height: 12px; }
+}
+@keyframes music-bar-3 {
+  0%, 100% { height: 2px; }
+  50% { height: 12px; }
+}
+
+.animate-music-bar-1 {
+  animation: music-bar-1 0.8s ease-in-out infinite;
+}
+.animate-music-bar-2 {
+  animation: music-bar-2 0.7s ease-in-out infinite;
+  animation-delay: 0.15s;
+}
+.animate-music-bar-3 {
+  animation: music-bar-3 0.9s ease-in-out infinite;
+  animation-delay: 0.3s;
+}
+
