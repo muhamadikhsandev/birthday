@@ -81,6 +81,25 @@ function BirthdayAppContent() {
     };
   }, []);
 
+  // Autoplay saat halaman pertama kali dimuat
+  useEffect(() => {
+    // Coba langsung autoplay
+    playBGM();
+    // Fallback: jika browser blokir autoplay, play saat interaksi pertama
+    const handleFirstInteraction = () => {
+      playBGM();
+      document.removeEventListener("click", handleFirstInteraction);
+      document.removeEventListener("touchstart", handleFirstInteraction);
+    };
+    document.addEventListener("click", handleFirstInteraction);
+    document.addEventListener("touchstart", handleFirstInteraction);
+    return () => {
+      document.removeEventListener("click", handleFirstInteraction);
+      document.removeEventListener("touchstart", handleFirstInteraction);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Click outside to close music selection widget
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -105,8 +124,8 @@ function BirthdayAppContent() {
       {/* Background floating petals */}
       <BackgroundPetals />
 
-      {/* Floating BGM Controller Widget */}
-      <div ref={widgetRef} className="fixed top-6 right-6 z-30 flex flex-col items-end gap-2">
+      {/* Floating BGM Controller Widget — pojok kanan bawah */}
+      <div ref={widgetRef} className="fixed bottom-20 right-4 z-30 flex flex-col-reverse items-end gap-2">
         <div className="flex items-center gap-1.5 bg-white/75 backdrop-blur-md border border-[#C96868]/30 rounded-full shadow-lg p-1.5 pr-3 transition-all hover:border-[#C96868]/50 hover:bg-white/85">
           <button
             onClick={() => {
@@ -144,13 +163,13 @@ function BirthdayAppContent() {
           </button>
         </div>
 
-        {/* Dropdown BGM List */}
+        {/* Dropdown BGM List — buka ke ATAS */}
         <AnimatePresence>
           {isOpen && (
             <motion.div 
-              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
               className="w-64 bg-white/90 backdrop-blur-lg border border-[#C96868]/20 rounded-2xl shadow-xl p-4 flex flex-col gap-3 font-sans"
             >
