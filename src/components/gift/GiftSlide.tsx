@@ -95,7 +95,7 @@ export default function GiftSlide({ onNavigate }: GiftSlideProps) {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, y: 30 }}
       transition={{ duration: 0.55, ease: "easeOut" }}
-      className="flex flex-col items-center justify-center text-center max-w-sm px-6 w-full -mt-6"
+      className="flex flex-col items-center justify-center text-center max-w-sm px-6 w-full -mt-20 md:-mt-28"
     >
       {/* Header */}
       <motion.h2

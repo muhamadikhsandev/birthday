@@ -73,38 +73,6 @@ function ProfilePhoto() {
   );
 }
 
-// ── Kado inline (buket + kue) ─────────────────────────────────────────────────
-function InlineGift() {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 0.2 }}
-      className="my-8 flex flex-col items-center gap-3"
-    >
-      <div
-        className="text-3xl md:text-4xl text-center leading-relaxed"
-        style={{ fontFamily: "var(--font-sacramento)" }}
-      >
-        🌹💐🌷
-      </div>
-      <p
-        className="text-xl md:text-2xl text-[#C96868]/80 text-center"
-        style={{ fontFamily: "var(--font-sacramento)" }}
-      >
-        Buket digital dan kue dari aku buat kamu —
-      </p>
-      <div className="text-4xl md:text-5xl text-center">🎂🎁</div>
-      <p
-        className="text-lg md:text-xl text-[#C96868]/65 text-center max-w-xs"
-        style={{ fontFamily: "var(--font-sacramento)" }}
-      >
-        Meski belum bisa kasih yang nyata, doa &amp; cinta ini nyata banget buat kamu. 💗
-      </p>
-    </motion.div>
-  );
-}
-
 // ── Form balas WA ─────────────────────────────────────────────────────────────
 function ReplyForm({ onNavigate }: { onNavigate: () => void }) {
   const [text, setText] = useState(
@@ -300,9 +268,6 @@ export default function LoveLetterSlide({ onNavigate }: LoveLetterSlideProps) {
               </motion.div>
             )}
           </div>
-
-          {/* ── Kado inline (buket & kue) setelah surat selesai ── */}
-          {finished && <InlineGift />}
 
           {/* ── Form balas WA ── */}
           {finished && <ReplyForm onNavigate={onNavigate} />}

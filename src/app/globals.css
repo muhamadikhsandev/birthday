@@ -37,12 +37,8 @@ body {
   height: 100dvh;
   margin: 0;
   padding: 0;
-  /* Safe area untuk notch/punchhole kamera di Android */
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
 }
+
 
 body {
   font-family: var(--font-quicksand), 'Quicksand', sans-serif;
