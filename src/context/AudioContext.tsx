@@ -1,6 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useRef } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
 
 export interface Track {
   id: string;
@@ -9,22 +15,23 @@ export interface Track {
 }
 
 export const TRACKS: Track[] = [
-  {
-    id: "lifetime-smile",
-    name: "A Lifetime in Your Smile",
-    url: "/assets/bgm/A_Lifetime_in_Your_Smile.ogg",
-  },
-  {
-    id: "chapter-love",
-    name: "A Chapter of Love",
-    url: "/assets/bgm/A_Chapter_of_Love.ogg",
-  },
-  {
-    id: "lifetime-birthdays",
-    name: "A Lifetime of Birthdays",
-    url: "/assets/bgm/A_Lifetime_of_Birthdays.ogg",
-  },
+  { id: "lifetime-smile", name: "A Lifetime in Your Smile", url: "/assets/bgm/A_Lifetime_in_Your_Smile.ogg" },
+  { id: "chapter-love",   name: "A Chapter of Love",        url: "/assets/bgm/A_Chapter_of_Love.ogg"       },
+  { id: "lifetime-bday",  name: "A Lifetime of Birthdays",  url: "/assets/bgm/A_Lifetime_of_Birthdays.ogg" },
 ];
+
+// Preloaded SFX pool — instansiatif saat mount agar tidak ada delay saat play
+const SFX_URL = "/assets/sfx/Minimal_Romantic_UI_Tap.ogg";
+const SFX_POOL_SIZE = 3;
+
+function createSFXPool(): HTMLAudioElement[] {
+  return Array.from({ length: SFX_POOL_SIZE }, () => {
+    const a = new Audio(SFX_URL);
+    a.volume = 0.6;
+    a.preload = "auto";
+    return a;
+  });
+}
 
 interface AudioContextType {
   currentTrack: Track;
@@ -39,109 +46,93 @@ interface AudioContextType {
   playSFX: () => void;
 }
 
-const AudioContext = createContext<AudioContextType | undefined>(undefined);
+const AudioCtx = createContext<AudioContextType | undefined>(undefined);
 
 export function AudioProvider({ children }: { children: React.ReactNode }) {
   const [currentTrack, setCurrentTrack] = useState<Track>(TRACKS[0]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolumeState] = useState(0.45);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Initialize background music
+  const bgmRef  = useRef<HTMLAudioElement | null>(null);
+  const sfxPool = useRef<HTMLAudioElement[]>([]);
+  const sfxIdx  = useRef(0);
+
+  // Inisialisasi BGM + SFX pool sekali saat mount
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const audio = new Audio(currentTrack.url);
-      audio.loop = true;
-      audio.volume = volume;
-      audioRef.current = audio;
+    if (typeof window === "undefined") return;
 
-      return () => {
-        audio.pause();
-      };
-    }
+    // BGM — preload agar langsung siap
+    const bgm = new Audio(TRACKS[0].url);
+    bgm.loop    = true;
+    bgm.volume  = 0.45;
+    bgm.preload = "auto";
+    bgmRef.current = bgm;
+
+    // SFX pool
+    sfxPool.current = createSFXPool();
+
+    return () => {
+      bgm.pause();
+      bgm.src = "";
+    };
   }, []);
 
   const playBGM = () => {
-    if (audioRef.current) {
-      audioRef.current.play()
-        .then(() => setIsPlaying(true))
-        .catch((err) => console.log("BGM play failed:", err));
-    } else {
-      setIsPlaying(true);
-    }
+    if (!bgmRef.current) return;
+    bgmRef.current
+      .play()
+      .then(() => setIsPlaying(true))
+      .catch((err) => console.log("BGM blocked:", err));
   };
 
   const pauseBGM = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-    }
+    bgmRef.current?.pause();
     setIsPlaying(false);
   };
 
-  const toggleBGM = () => {
-    if (isPlaying) {
-      pauseBGM();
-    } else {
-      playBGM();
-    }
-  };
+  const toggleBGM = () => (isPlaying ? pauseBGM() : playBGM());
 
   const changeTrack = (track: Track) => {
     setCurrentTrack(track);
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.src = track.url;
-      audioRef.current.load();
-      audioRef.current.volume = volume;
-      audioRef.current.play()
-        .then(() => setIsPlaying(true))
-        .catch((err) => {
-          console.log("Failed to play track:", err);
-          setIsPlaying(false);
-        });
-    }
+    if (!bgmRef.current) return;
+    bgmRef.current.pause();
+    bgmRef.current.src    = track.url;
+    bgmRef.current.volume = volume;
+    bgmRef.current.load();
+    bgmRef.current
+      .play()
+      .then(() => setIsPlaying(true))
+      .catch(() => setIsPlaying(false));
   };
 
   const setVolume = (vol: number) => {
-    const safeVol = Math.max(0, Math.min(1, vol));
-    setVolumeState(safeVol);
-    if (audioRef.current) {
-      audioRef.current.volume = safeVol;
-    }
+    const safe = Math.max(0, Math.min(1, vol));
+    setVolumeState(safe);
+    if (bgmRef.current) bgmRef.current.volume = safe;
   };
 
+  // Round-robin pool agar tidak ada gap antar klik cepat
   const playSFX = () => {
-    if (typeof window !== "undefined") {
-      const sfx = new Audio("/assets/sfx/Minimal_Romantic_UI_Tap.ogg");
-      sfx.volume = 0.6;
-      sfx.play().catch((err) => console.log("SFX play failed:", err));
-    }
+    const pool = sfxPool.current;
+    if (!pool.length) return;
+    const el = pool[sfxIdx.current % pool.length];
+    sfxIdx.current++;
+    el.currentTime = 0;
+    el.play().catch(() => {});
   };
 
   return (
-    <AudioContext.Provider
-      value={{
-        currentTrack,
-        isPlaying,
-        volume,
-        tracks: TRACKS,
-        playBGM,
-        pauseBGM,
-        toggleBGM,
-        changeTrack,
-        setVolume,
-        playSFX,
-      }}
-    >
+    <AudioCtx.Provider value={{
+      currentTrack, isPlaying, volume, tracks: TRACKS,
+      playBGM, pauseBGM, toggleBGM, changeTrack, setVolume, playSFX,
+    }}>
       {children}
-    </AudioContext.Provider>
+    </AudioCtx.Provider>
   );
 }
 
 export function useAudio() {
-  const context = useContext(AudioContext);
-  if (context === undefined) {
-    throw new Error("useAudio must be used within an AudioProvider");
-  }
-  return context;
+  const ctx = useContext(AudioCtx);
+  if (!ctx) throw new Error("useAudio must be inside AudioProvider");
+  return ctx;
 }

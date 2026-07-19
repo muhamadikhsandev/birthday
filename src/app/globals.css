@@ -21,6 +21,15 @@
   box-sizing: border-box;
 }
 
+/* Scrollbar transparan / tersembunyi — cross browser */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE & Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari, Opera */
+}
+
 html,
 body {
   height: 100%;

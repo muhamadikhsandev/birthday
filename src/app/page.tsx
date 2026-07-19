@@ -12,6 +12,7 @@ import BackgroundPetals from "@/components/ui/BackgroundPetals";
 import PageIndicator from "@/components/ui/PageIndicator";
 import BGMWidget from "@/components/ui/BGMWidget";
 import PageNavigator from "@/components/ui/PageNavigator";
+import FullscreenButton from "@/components/ui/FullscreenButton";
 
 type PageSection = 1 | 2 | 3 | 4;
 
@@ -108,6 +109,7 @@ function BirthdayAppContent() {
       </div>
 
       <PageIndicator current={page} />
+      <FullscreenButton />
     </main>
   );
 }
