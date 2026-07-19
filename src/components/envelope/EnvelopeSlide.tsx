@@ -7,6 +7,7 @@ import Button from "@/components/ui/Button";
 import OrnamentalArrow from "./OrnamentalArrow";
 import AnimatedEnvelope from "./AnimatedEnvelope";
 import LetterPreview from "./LetterPreview";
+import TypingTitle from "./TypingTitle";
 
 interface EnvelopeSlideProps {
   onOpen: () => void;
@@ -40,10 +41,10 @@ export default function EnvelopeSlide({ onOpen }: EnvelopeSlideProps) {
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.6 }}
-            className="text-5xl md:text-6xl text-[#C96868] leading-none whitespace-nowrap"
+            className="text-5xl md:text-6xl text-[#C96868] leading-none whitespace-nowrap min-h-[60px] md:min-h-[72px]"
             style={{ fontFamily: "var(--font-sacramento)" }}
           >
-            Happy Birthday
+            <TypingTitle text="Happy Birthday" />
           </motion.h1>
 
           {/* Subtitle — icon Gift + teks satu baris */}

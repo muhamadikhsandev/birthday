@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SakuraPetal from "./SakuraPetal";
+import GameSuccessModal from "./GameSuccessModal";
 
 const TOTAL_SAKURA = 5;
 
@@ -35,30 +36,47 @@ export default function CatchSakuraGame({ onComplete }: CatchSakuraGameProps) {
   const [score, setScore] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
   const [catchEffects, setCatchEffects] = useState<
-    { id: number; x: number; y: number }[]
+    { id: number; x: number; y: number; count: number }[]
   >([]);
 
   const handleCatch = useCallback(
     (id: number) => {
       if (showSuccess) return;
 
+      // Play click sound (sfx_love_story)
+      if (typeof window !== "undefined") {
+        const catchAudio = new Audio("/assets/sfx/sfx_love_story.ogg");
+        catchAudio.volume = 0.55;
+        catchAudio.play().catch((err) => console.log("Sound play error:", err));
+      }
+
       // Find the caught petal to get its position for the catch effect
       const petal = petals.find((p) => p.id === id);
-      if (petal) {
-        setCatchEffects((prev) => [
-          ...prev,
-          { id: Date.now(), x: petal.x, y: 30 },
-        ]);
-        setTimeout(() => {
-          setCatchEffects((prev) => prev.filter((e) => e.id !== Date.now()));
-        }, 800);
-      }
 
       setScore((prev) => {
         const next = prev + 1;
+
+        if (petal) {
+          setCatchEffects((prevEffects) => [
+            ...prevEffects,
+            { id: Date.now(), x: petal.x, y: 30, count: next },
+          ]);
+          setTimeout(() => {
+            setCatchEffects((prevEffects) => prevEffects.filter((e) => e.id !== Date.now()));
+          }, 800);
+        }
+
         if (next >= TOTAL_SAKURA) {
           setShowSuccess(true);
-          setTimeout(() => onComplete(), 1800);
+
+          // Play success sound (sfx_sakura)
+          if (typeof window !== "undefined") {
+            const successAudio = new Audio("/assets/sfx/sfx_sakura.ogg");
+            successAudio.volume = 0.65;
+            successAudio.play().catch((err) => console.log("Success sound play error:", err));
+          }
+
+          setTimeout(() => onComplete(), 2800);
         }
         return next;
       });
@@ -178,47 +196,21 @@ export default function CatchSakuraGame({ onComplete }: CatchSakuraGameProps) {
           {catchEffects.map((effect) => (
             <motion.div
               key={effect.id}
-              className="absolute pointer-events-none text-xl"
+              className="absolute pointer-events-none font-bold text-lg text-[#C96868] drop-shadow-md font-sans"
               style={{ left: `${effect.x}%`, top: `${effect.y}%` }}
-              initial={{ opacity: 1, scale: 1, y: 0 }}
-              animate={{ opacity: 0, scale: 1.8, y: -40 }}
+              initial={{ opacity: 1, scale: 0.8, y: 0 }}
+              animate={{ opacity: 0, scale: 2.2, y: -50 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.7 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              ✨
+              {effect.count}X
             </motion.div>
           ))}
         </AnimatePresence>
 
         {/* Success overlay */}
         <AnimatePresence>
-          {showSuccess && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm rounded-2xl z-20"
-            >
-              <motion.div
-                animate={{ rotate: [0, -10, 10, -10, 0] }}
-                transition={{ duration: 0.5, repeat: 2 }}
-                className="text-6xl mb-3"
-              >
-                🎉
-              </motion.div>
-              <p
-                className="text-4xl font-bold text-[#C96868]"
-                style={{ fontFamily: "var(--font-sacramento)" }}
-              >
-                Yay, kamu berhasil! 🌸
-              </p>
-              <p
-                className="text-2xl text-[#C96868]/80 mt-1"
-                style={{ fontFamily: "var(--font-sacramento)" }}
-              >
-                Membuka surat cinta...
-              </p>
-            </motion.div>
-          )}
+          {showSuccess && <GameSuccessModal />}
         </AnimatePresence>
       </div>
 
@@ -233,3 +225,4 @@ export default function CatchSakuraGame({ onComplete }: CatchSakuraGameProps) {
     </motion.div>
   );
 }
+
