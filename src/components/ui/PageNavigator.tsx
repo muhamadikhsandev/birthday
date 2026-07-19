@@ -13,10 +13,10 @@ interface PageNavigatorProps {
 }
 
 const PAGE_META: { page: PageSection; icon: React.ReactNode; label: string }[] = [
-  { page: 1, icon: <Mail className="w-5 h-5" />, label: "Amplop Kejutan" },
-  { page: 2, icon: <Flower className="w-5 h-5" />, label: "Mini Game Sakura" },
-  { page: 3, icon: <Heart className="w-5 h-5" />, label: "Surat Cinta" },
-  { page: 4, icon: <Gift className="w-5 h-5" />, label: "Kado Virtual" },
+  { page: 1, icon: <Mail className="w-5 h-5" />,    label: "Amplop Kejutan" },
+  { page: 2, icon: <Flower className="w-5 h-5" />,  label: "Mini Game Sakura" },
+  { page: 3, icon: <Gift className="w-5 h-5" />,    label: "Kado Virtual" },
+  { page: 4, icon: <Heart className="w-5 h-5" />,   label: "Surat Cinta" },
 ];
 
 export default function PageNavigator({

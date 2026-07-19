@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { Heart } from "lucide-react";
 
 import EnvelopeSlide from "@/components/envelope/EnvelopeSlide";
 import CatchSakuraGame from "@/components/game/CatchSakuraGame";
@@ -21,29 +22,13 @@ function BirthdayAppContent() {
   const [page, setPage] = useState<PageSection>(1);
   const [unlockedPages, setUnlockedPages] = useState<PageSection[]>([1]);
   const [showNavigator, setShowNavigator] = useState(false);
-  const { playBGM } = useAudio();
+  const [audioStarted, setAudioStarted] = useState(false);
+  const { playBGM, playSFX } = useAudio();
 
   // Kunci scroll
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = ""; };
-  }, []);
-
-  // Autoplay — coba langsung, fallback ke interaksi pertama
-  useEffect(() => {
-    playBGM();
-    const onInteract = () => {
-      playBGM();
-      document.removeEventListener("click", onInteract);
-      document.removeEventListener("touchstart", onInteract);
-    };
-    document.addEventListener("click", onInteract);
-    document.addEventListener("touchstart", onInteract);
-    return () => {
-      document.removeEventListener("click", onInteract);
-      document.removeEventListener("touchstart", onInteract);
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Unlock halaman baru saat berpindah
@@ -63,7 +48,9 @@ function BirthdayAppContent() {
       }}
     >
       <BackgroundPetals />
-      <BGMWidget />
+      
+      {/* Hanya tampilkan widget BGM jika audio sudah dimulai */}
+      {audioStarted && <BGMWidget />}
 
       {/* Page Navigator Modal */}
       {showNavigator && (
@@ -78,38 +65,67 @@ function BirthdayAppContent() {
       {/* Slide konten */}
       <div className="relative z-10 w-full h-full flex items-center justify-center px-4">
         <AnimatePresence mode="wait">
-          {page === 1 && (
-            <EnvelopeSlide
-              key="slide-1"
-              onOpen={() => { playBGM(); navigateTo(2); }}
-            />
-          )}
-          {page === 2 && (
-            <CatchSakuraGame
-              key="slide-2"
-              onComplete={() => navigateTo(3)}
-            />
-          )}
-          {page === 3 && (
-            <LoveLetterSlide
-              key="slide-3"
-              onNavigate={() => {
-                navigateTo(4);
-                setShowNavigator(true);
+          {!audioStarted ? (
+            <motion.div
+              key="audio-starter"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.5 }}
+              className="flex flex-col items-center justify-center cursor-pointer"
+              onClick={() => {
+                setAudioStarted(true);
+                playBGM();
+                playSFX();
               }}
-            />
-          )}
-          {page === 4 && (
-            <GiftSlide
-              key="slide-4"
-              onNavigate={() => setShowNavigator(true)}
-            />
+            >
+              <motion.div
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                className="w-24 h-24 rounded-full bg-white flex items-center justify-center shadow-lg border border-[#C96868]/20"
+              >
+                <Heart className="w-12 h-12 text-[#C96868] fill-current" />
+              </motion.div>
+              <p
+                className="mt-6 text-3xl text-[#C96868] font-bold animate-pulse text-center select-none"
+                style={{ fontFamily: "var(--font-sacramento)" }}
+              >
+                Sentuh untuk Mulai 💖
+              </p>
+            </motion.div>
+          ) : (
+            <>
+              {page === 1 && (
+                <EnvelopeSlide
+                  key="slide-1"
+                  onOpen={() => { playBGM(); navigateTo(2); }}
+                />
+              )}
+              {page === 2 && (
+                <CatchSakuraGame
+                  key="slide-2"
+                  onComplete={() => navigateTo(3)}
+                />
+              )}
+              {page === 3 && (
+                <GiftSlide
+                  key="slide-3"
+                  onNavigate={() => navigateTo(4)}
+                />
+              )}
+              {page === 4 && (
+                <LoveLetterSlide
+                  key="slide-4"
+                  onNavigate={() => setShowNavigator(true)}
+                />
+              )}
+            </>
           )}
         </AnimatePresence>
       </div>
 
-      <PageIndicator current={page} />
-      <FullscreenButton />
+      {audioStarted && <PageIndicator current={page} />}
+      {audioStarted && <FullscreenButton />}
     </main>
   );
 }

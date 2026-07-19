@@ -20,36 +20,51 @@ const WA_NUMBER = "628989379116";
 // ── Foto profil dengan border ─────────────────────────────────────────────────
 function ProfilePhoto() {
   return (
-    <div className="flex flex-col items-center gap-3 mb-6">
-      {/* Ring luar dekoratif */}
-      <div className="relative">
-        <div
-          className="w-28 h-28 md:w-36 md:h-36 rounded-full p-[3px]"
+    <div className="flex flex-col items-center gap-4 mb-6">
+      {/* Pulse ring animasi di belakang */}
+      <div className="relative flex items-center justify-center">
+        <motion.div
+          className="absolute rounded-full"
           style={{
-            background: "linear-gradient(135deg, #C96868 0%, #FBBF9E 50%, #C96868 100%)",
-            boxShadow: "0 0 0 4px rgba(201,104,104,0.15), 0 8px 30px rgba(201,104,104,0.3)",
+            width: "100%", height: "100%",
+            background: "radial-gradient(circle, rgba(201,104,104,0.18) 0%, transparent 70%)",
+          }}
+          animate={{ scale: [1, 1.12, 1], opacity: [0.6, 1, 0.6] }}
+          transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
+        />
+
+        {/* Ring gradien utama */}
+        <div
+          className="w-44 h-44 md:w-56 md:h-56 rounded-full p-[4px] relative"
+          style={{
+            background: "linear-gradient(135deg, #C96868 0%, #FBBF9E 40%, #F472B6 70%, #C96868 100%)",
+            boxShadow: "0 0 0 6px rgba(201,104,104,0.12), 0 12px 40px rgba(201,104,104,0.38), 0 0 0 2px white",
           }}
         >
-          {/* Foto */}
-          <div className="w-full h-full rounded-full overflow-hidden border-2 border-white/80">
+          {/* Inner white ring */}
+          <div className="w-full h-full rounded-full overflow-hidden border-[3px] border-white">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/assets/images/photo.webp"
               alt="Siffa Amelia"
               className="w-full h-full object-cover object-top"
-              style={{ filter: "brightness(0.97) saturate(0.95)" }}
+              style={{ filter: "brightness(0.98) saturate(0.93) contrast(1.03)" }}
             />
           </div>
         </div>
-        {/* Badge hati kecil */}
-        <div
-          className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-white flex items-center justify-center shadow-md border border-[#C96868]/20"
+
+        {/* Badge hati */}
+        <motion.div
+          className="absolute -bottom-1 -right-2 w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-lg border-2 border-[#C96868]/25"
+          animate={{ scale: [1, 1.15, 1] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Heart className="w-3.5 h-3.5 text-[#C96868] fill-current" />
-        </div>
+          <Heart className="w-5 h-5 text-[#C96868] fill-current" />
+        </motion.div>
       </div>
+
       <p
-        className="text-xl text-[#C96868] font-medium"
+        className="text-2xl text-[#C96868] font-medium"
         style={{ fontFamily: "var(--font-sacramento)" }}
       >
         Siffa Amelia 🌸

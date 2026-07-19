@@ -25,6 +25,15 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport = {
+  // viewport-fit=cover agar konten tembus notch/kamera di Android
+  width: "device-width",
+  initialScale: 1,
+  minimumScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -35,6 +44,13 @@ export default function RootLayout({
       lang="id"
       className={`${sacramento.variable} ${quicksand.variable} h-full`}
     >
+      {/* theme-color untuk status bar Android */}
+      <head>
+        <meta name="theme-color" content="#FFF0E6" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+      </head>
       <body className="h-full antialiased">{children}</body>
     </html>
   );
