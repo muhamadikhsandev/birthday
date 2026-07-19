@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ArrowDown, Heart } from "lucide-react";
 import Button from "@/components/ui/Button";
 
 interface EnvelopeSlideProps {
@@ -10,19 +11,15 @@ interface EnvelopeSlideProps {
 
 // ─── Komponen kecil ───────────────────────────────────────────────────────────
 
-function FloatingPetals() {
+function DownArrowIndicator() {
   return (
-    <div className="flex gap-2 mb-4 text-2xl">
-      {[..."🌸🌷🌸"].map((char, i) => (
-        <motion.span
-          key={i}
-          animate={{ y: [0, -6, 0] }}
-          transition={{ duration: 2, delay: i * 0.3, repeat: Infinity }}
-        >
-          {char}
-        </motion.span>
-      ))}
-    </div>
+    <motion.div
+      animate={{ y: [0, 6, 0] }}
+      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+      className="mb-6 text-[#C96868]/70 bg-white/60 p-2.5 rounded-full border border-white/80 shadow-sm"
+    >
+      <ArrowDown className="w-5 h-5" />
+    </motion.div>
   );
 }
 
@@ -57,13 +54,13 @@ function EnvelopeIllustration() {
       </div>
       {/* Stempel hati */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <motion.span
+        <motion.div
           animate={{ scale: [1, 1.15, 1] }}
           transition={{ duration: 1.5, repeat: Infinity }}
-          className="text-4xl z-10"
+          className="z-10 text-[#C96868]"
         >
-          💌
-        </motion.span>
+          <Heart className="w-8 h-8 fill-current" />
+        </motion.div>
       </div>
       {/* Lipatan bawah */}
       <div
@@ -192,7 +189,7 @@ export default function EnvelopeSlide({ onOpen }: EnvelopeSlideProps) {
           transition={{ duration: 0.5, ease: "easeOut" }}
           className="flex flex-col items-center justify-center text-center max-w-md px-6"
         >
-          <FloatingPetals />
+          <DownArrowIndicator />
 
           {/* Amplop */}
           <motion.div
@@ -211,9 +208,7 @@ export default function EnvelopeSlide({ onOpen }: EnvelopeSlideProps) {
             className="text-5xl md:text-6xl text-[#C96868] mb-3 leading-tight"
             style={{ fontFamily: "var(--font-sacramento)" }}
           >
-            Happy Birthday
-            <br />
-            Sayang 🦄
+            Happy Birthday Sayang
           </motion.h1>
 
           <motion.p
@@ -243,23 +238,7 @@ export default function EnvelopeSlide({ onOpen }: EnvelopeSlideProps) {
             </Button>
           </motion.div>
 
-          {/* Bunga bawah */}
-          <motion.div
-            className="mt-8 flex gap-3 text-xl"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-          >
-            {["🌹", "💐", "🌸", "💐", "🌹"].map((icon, i) => (
-              <motion.span
-                key={i}
-                animate={{ y: [0, -4, 0] }}
-                transition={{ duration: 2.5, delay: i * 0.2, repeat: Infinity }}
-              >
-                {icon}
-              </motion.span>
-            ))}
-          </motion.div>
+
         </motion.div>
       )}
 
