@@ -1,4 +1,4 @@
-type PageSection = 1 | 2 | 3;
+type PageSection = 1 | 2 | 3 | 4;
 
 interface PageIndicatorProps {
   current: PageSection;
@@ -7,7 +7,7 @@ interface PageIndicatorProps {
 export default function PageIndicator({ current }: PageIndicatorProps) {
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-      {([1, 2, 3] as PageSection[]).map((p) => (
+      {([1, 2, 3, 4] as PageSection[]).map((p) => (
         <div
           key={p}
           className="rounded-full transition-all duration-300"

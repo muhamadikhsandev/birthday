@@ -2,66 +2,93 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import PhotoFrame from "./PhotoFrame";
+import { LayoutGrid } from "lucide-react";
 import LetterTypingView from "./LetterTypingView";
 import LetterReplyForm from "./LetterReplyForm";
 
-export default function LoveLetterSlide() {
+interface LoveLetterSlideProps {
+  onNavigate: () => void;
+}
+
+export default function LoveLetterSlide({ onNavigate }: LoveLetterSlideProps) {
   const [view, setView] = useState<"reading" | "replying">("reading");
 
   return (
     <motion.div
       key="love-letter"
-      initial={{ opacity: 0, y: 40 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -40 }}
+      exit={{ opacity: 0, y: -30 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="w-full max-w-5xl mx-auto px-2 md:px-4"
+      className="relative w-full h-full flex items-stretch"
     >
+      {/* ── Foto menyatu di kiri (hanya desktop) ── */}
       <div
-        className="flex flex-col md:flex-row items-center gap-6 md:gap-10 p-5 md:p-8 rounded-3xl w-full min-h-[75vh] md:min-h-[70vh] max-h-[85vh] overflow-hidden"
-        style={{
-          background: "rgba(255, 253, 247, 0.85)",
-          backdropFilter: "blur(12px)",
-          border: "1px solid rgba(255, 255, 255, 0.9)",
-          boxShadow:
-            "0 20px 60px rgba(201, 104, 104, 0.15), 0 4px 16px rgba(0,0,0,0.08)",
-        }}
+        className="hidden md:block absolute left-0 top-0 bottom-0 w-[38%] pointer-events-none"
+        aria-hidden="true"
       >
-        {/* Photo Section (left on desktop, top on mobile) */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="animate-float-up shrink-0 flex justify-center w-full md:w-auto"
-        >
-          <PhotoFrame
-            src="/images/foto-doi-cantik.webp"
-            alt="Calon Istri Cantik 🦄"
-          />
-        </motion.div>
+        {/* Foto dengan mask gradient agar menyatu */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: "url('/assets/images/photo.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center top",
+            maskImage: "linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.35) 55%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.35) 55%, transparent 100%)",
+            filter: "brightness(0.9) saturate(0.85)",
+          }}
+        />
+        {/* Warm overlay agar nyatu sama tema warna */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(to right, rgba(255,240,230,0.25) 0%, rgba(255,240,230,0) 70%)",
+          }}
+        />
+      </div>
 
-        {/* Content Section (right on desktop, bottom on mobile) */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4, duration: 0.5 }}
-          className="flex-1 w-full min-w-0 h-full flex flex-col justify-center overflow-hidden"
+      {/* ── Foto mobile (di atas teks, circular portrait) ── */}
+      <div className="md:hidden absolute top-4 right-4 z-10 pointer-events-none">
+        <div
+          className="w-20 h-20 rounded-full border-2 border-[#C96868]/30 overflow-hidden shadow-lg"
+          style={{ boxShadow: "0 4px 20px rgba(201,104,104,0.25)" }}
         >
-          <AnimatePresence mode="wait">
-            {view === "reading" ? (
-              <LetterTypingView
-                key="typing-view"
-                onReplyClick={() => setView("replying")}
-              />
-            ) : (
-              <LetterReplyForm
-                key="reply-form"
-                onBack={() => setView("reading")}
-              />
-            )}
-          </AnimatePresence>
-        </motion.div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/assets/images/photo.png"
+            alt="Siffa"
+            className="w-full h-full object-cover object-top"
+            style={{ filter: "brightness(0.95) saturate(0.9)" }}
+          />
+        </div>
+      </div>
+
+      {/* ── Konten utama surat ── */}
+      <div className="relative z-10 flex flex-col w-full md:ml-[30%] max-w-2xl mx-auto md:mx-0 px-5 md:px-8 py-6 justify-center h-full">
+        {/* Tombol navigasi */}
+        <button
+          onClick={onNavigate}
+          className="absolute top-4 left-4 md:left-6 flex items-center gap-1.5 text-xs text-[#C96868]/60 hover:text-[#C96868] transition-colors font-sans font-semibold z-20"
+        >
+          <LayoutGrid className="w-4 h-4" />
+          Halaman lain
+        </button>
+
+        <AnimatePresence mode="wait">
+          {view === "reading" ? (
+            <LetterTypingView
+              key="typing-view"
+              onReplyClick={() => setView("replying")}
+            />
+          ) : (
+            <LetterReplyForm
+              key="reply-form"
+              onBack={() => setView("reading")}
+              onNavigate={onNavigate}
+            />
+          )}
+        </AnimatePresence>
       </div>
     </motion.div>
   );
